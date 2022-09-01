@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\sources\imgui.cpp" />
+    <ClCompile Include="..\sources\imgui_demo.cpp" />
+    <ClCompile Include="..\sources\imgui_draw.cpp" />
+    <ClCompile Include="..\sources\imgui_tables.cpp" />
+    <ClCompile Include="..\sources\imgui_widgets.cpp" />
+  </ItemGroup>
+</Project>
