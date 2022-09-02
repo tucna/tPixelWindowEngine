@@ -25,6 +25,8 @@ public:
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
+    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
     ImGui::ShowDemoWindow();
 
     ImGui::Render();
@@ -37,6 +39,8 @@ public:
   {
     ImGui_ImplWin32_Init(GetHWND());
     ImGui_ImplDX11_Init(GetDevice(), GetContext());
+
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     // Called once at the start, so create things here
     return true;

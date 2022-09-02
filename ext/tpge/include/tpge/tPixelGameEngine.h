@@ -452,7 +452,7 @@ namespace tDX // tucna - DirectX
 
     // If anything sets this flag to false, the engine "should" shut down gracefully
     static bool bActive;
-    // If anything sets this flag to true, the window resizing shoudl be handled
+    // If anything sets this flag to true, the window resizing should be handled
     static bool bResize;
 
     // Common initialisation functions
@@ -1955,7 +1955,7 @@ namespace tDX
     nWindowHeight = (LONG)nScreenHeight * (LONG)nPixelHeight;
 
     // Define window furniture
-    DWORD dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
+    DWORD dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE | WS_EX_NOREDIRECTIONBITMAP;
     DWORD dwStyle = WS_CAPTION | WS_SYSMENU | WS_VISIBLE | WS_THICKFRAME;
 
     int nCosmeticOffset = 30;
@@ -2117,7 +2117,9 @@ namespace tDX
     m_d3dContext->PSSetShaderResources(0, 1, m_textureView.GetAddressOf());
 
     // Set the viewport
-    CD3D11_VIEWPORT viewport(static_cast<float>(nViewX), static_cast<float>(nViewY), static_cast<float>(nViewW), static_cast<float>(nViewH));
+    // TUCNA
+    CD3D11_VIEWPORT viewport(static_cast<float>(0), static_cast<float>(0), static_cast<float>(nWindowWidth), static_cast<float>(nWindowHeight));
+    //CD3D11_VIEWPORT viewport(static_cast<float>(nViewX), static_cast<float>(nViewY), static_cast<float>(nViewW), static_cast<float>(nViewH));
     m_d3dContext->RSSetViewports(1, &viewport);
   }
 
