@@ -97,6 +97,8 @@ namespace _gfs = std::experimental::filesystem::v1;
 #undef max
 #define UNUSED(x) (void)(x)
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 namespace tDX // tucna - DirectX
 {
   struct Pixel
@@ -291,6 +293,8 @@ namespace tDX // tucna - DirectX
     virtual bool OnUserCreate();
     // Called every frame, and provides you with a time per frame value
     virtual bool OnUserUpdate(float fElapsedTime);
+    // Called every frame, just before Present
+    virtual bool OnUserUpdateEndFrame(float fElapsedTime);
     // Called once on application termination, so you can be a clean coder
     virtual bool OnUserDestroy();
 
@@ -375,6 +379,11 @@ namespace tDX // tucna - DirectX
     void Clear(Pixel p);
     // Resize the primary screen sprite
     void SetScreenSize(int w, int h);
+
+    // General getters what ImGUI needs
+    HWND GetHWND() { return tDX_hWnd; }
+    ID3D11Device* GetDevice() { return m_d3dDevice.Get(); }
+    ID3D11DeviceContext* GetContext() { return m_d3dContext.Get(); }
 
   public: // Branding
     std::string sAppName;
@@ -1152,6 +1161,10 @@ namespace tDX
         m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), NULL);
 
         m_d3dContext->DrawIndexed(6, 0, 0);
+
+        if (!OnUserUpdateEndFrame(fElapsedTime))
+          bActive = false;
+
         m_swapChain->Present(0, 0);
 
         // Update Title Bar
@@ -1798,6 +1811,10 @@ namespace tDX
   {
     UNUSED(fElapsedTime);  return false;
   }
+  bool PixelGameEngine::OnUserUpdateEndFrame(float fElapsedTime)
+  {
+    UNUSED(fElapsedTime); return false;
+  }
   bool PixelGameEngine::OnUserDestroy()
   {
     return true;
@@ -2132,6 +2149,11 @@ namespace tDX
   LRESULT CALLBACK PixelGameEngine::tDX_WindowEvent(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
   {
     static PixelGameEngine *sge;
+
+    // If event is consumed by user then quit
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+      return true;
+
     switch (uMsg)
     {
     case WM_CREATE:		sge = (PixelGameEngine*)((LPCREATESTRUCT)lParam)->lpCreateParams;	return 0;

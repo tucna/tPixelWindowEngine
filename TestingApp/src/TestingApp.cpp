@@ -2,17 +2,42 @@
 
 #include "tpge/tPixelGameEngine.h"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_dx11.h"
+#include "imgui/imgui_impl_win32.h"
+
 class Example : public tDX::PixelGameEngine
 {
 public:
   Example()
   {
     sAppName = "Example";
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
   }
 
 public:
+  bool OnUserUpdateEndFrame(float fElapsedTime)
+  {
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::ShowDemoWindow();
+
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+    return true;
+  }
+
   bool OnUserCreate() override
   {
+    ImGui_ImplWin32_Init(GetHWND());
+    ImGui_ImplDX11_Init(GetDevice(), GetContext());
+
     // Called once at the start, so create things here
     return true;
   }
@@ -33,7 +58,7 @@ public:
 int main()
 {
   Example demo;
-  if (demo.Construct(250, 250, 4, 4))
+  if (demo.Construct(400, 400, 2, 2))
     demo.Start();
 
   return 0;
