@@ -11,7 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\dependencies.cpp" />
+    <ClCompile Include="..\..\ext\imgui\sources\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\..\ext\imgui\sources\backends\imgui_impl_win32.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -67,7 +68,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)ext\imgui\include\imgui;$(SolutionDir)ext\imgui\sources;$(SolutionDir)ext\tpge\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ext\imgui\include\imgui;$(SolutionDir)ext\imgui\include\imgui\backends;$(SolutionDir)ext\tpge\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -83,7 +84,7 @@
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>xcopy /y /f "$(TargetDir)$(ProjectName).lib" "$(SolutionDir)distribution\lib\"
-xcopy /y /f "$(SolutionDir)ext\imgui\include\imgui\imgui.h" "$(SolutionDir)distribution\include\imgui\"
+xcopy /y /f /s "$(SolutionDir)ext\imgui\include\*" "$(SolutionDir)distribution\include\imgui\"
 xcopy /y /f /s "$(SolutionDir)ext\tpge\include\*" "$(SolutionDir)distribution\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -98,7 +99,7 @@ xcopy /y /f /s "$(SolutionDir)ext\tpge\include\*" "$(SolutionDir)distribution\in
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)ext\imgui\include\imgui;$(SolutionDir)ext\imgui\sources;$(SolutionDir)ext\tpge\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ext\imgui\include\imgui;$(SolutionDir)ext\imgui\include\imgui\backends;$(SolutionDir)ext\tpge\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -116,7 +117,7 @@ xcopy /y /f /s "$(SolutionDir)ext\tpge\include\*" "$(SolutionDir)distribution\in
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>xcopy /y /f "$(TargetDir)$(ProjectName).lib" "$(SolutionDir)distribution\lib\"
-xcopy /y /f "$(SolutionDir)ext\imgui\include\imgui\imgui.h" "$(SolutionDir)distribution\include\imgui\"
+xcopy /y /f /s "$(SolutionDir)ext\imgui\include\*" "$(SolutionDir)distribution\include\imgui\"
 xcopy /y /f /s "$(SolutionDir)ext\tpge\include\*" "$(SolutionDir)distribution\include\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
