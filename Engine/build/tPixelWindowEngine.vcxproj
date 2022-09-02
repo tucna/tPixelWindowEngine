@@ -55,6 +55,8 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\obj\$(Configuration)\</IntDir>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -75,6 +77,15 @@
       <AdditionalDependencies>ImGui.lib;tPGE.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)ext\tpge\bin\Debug;$(SolutionDir)ext\imgui\bin\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy /y /f "$(TargetDir)$(ProjectName).lib" "$(SolutionDir)distribution\lib\"
+xcopy /y /f "$(SolutionDir)ext\imgui\include\imgui\imgui.h" "$(SolutionDir)distribution\include\imgui\"
+xcopy /y /f /s "$(SolutionDir)ext\tpge\include\*" "$(SolutionDir)distribution\include\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -99,6 +110,15 @@
       <AdditionalDependencies>ImGui.lib;tPGE.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)ext\tpge\bin\Release;$(SolutionDir)ext\imgui\bin\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy /y /f "$(TargetDir)$(ProjectName).lib" "$(SolutionDir)distribution\lib\"
+xcopy /y /f "$(SolutionDir)ext\imgui\include\imgui\imgui.h" "$(SolutionDir)distribution\include\imgui\"
+xcopy /y /f /s "$(SolutionDir)ext\tpge\include\*" "$(SolutionDir)distribution\include\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
