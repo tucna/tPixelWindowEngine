@@ -3,4 +3,25 @@
   <ItemGroup>
     <ClCompile Include="..\src\dependencies.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{86b08184-4b02-4418-82eb-31998f26b8ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{91e6cbd0-c8ea-48a9-9da0-43dba4848dca}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\ext\tpge\rsc\ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\ext\tpge\rsc\vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\ext\tpge\include\tpge\tPixelGameEngine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

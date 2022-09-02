@@ -953,10 +953,8 @@ namespace tDX
 
     // VS setup
     {
-      Microsoft::WRL::ComPtr<ID3DBlob> blob;
-      D3DReadFileToBlob(L"../../ext/tpge/rsc/vs.cso", &blob);
-
-      m_d3dDevice->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf());
+      #include "../../../Engine/shaders/vs.h"
+      m_d3dDevice->CreateVertexShader(b_vs, sizeof(b_vs), nullptr, m_vertexShader.GetAddressOf());
 
       const D3D11_INPUT_ELEMENT_DESC ied[] =
       {
@@ -964,16 +962,14 @@ namespace tDX
         { "TexCoord",0,DXGI_FORMAT_R32G32_FLOAT   ,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 }
       };
 
-      m_d3dDevice->CreateInputLayout(ied, (UINT)std::size(ied), blob->GetBufferPointer(), blob->GetBufferSize(), m_inputLayout.GetAddressOf());
+      m_d3dDevice->CreateInputLayout(ied, (UINT)std::size(ied), b_vs, sizeof(b_vs), m_inputLayout.GetAddressOf());
       m_d3dContext->VSSetShader(m_vertexShader.Get(), NULL, 0);
     }
 
     // PS setup
     {
-      Microsoft::WRL::ComPtr<ID3DBlob> blob;
-      D3DReadFileToBlob(L"../../ext/tpge/rsc/ps.cso", &blob);
-
-      m_d3dDevice->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_pixelShader.GetAddressOf());
+      #include "../../../Engine/shaders/ps.h"
+      m_d3dDevice->CreatePixelShader(b_ps, sizeof(b_ps), nullptr, m_pixelShader.GetAddressOf());
       m_d3dContext->PSSetShader(m_pixelShader.Get(), NULL, 0);
     }
 
