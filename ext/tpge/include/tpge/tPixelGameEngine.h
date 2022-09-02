@@ -953,7 +953,7 @@ namespace tDX
 
     // VS setup
     {
-      #include "../../../Engine/shaders/vs.h"
+      #include "vs.h"
       m_d3dDevice->CreateVertexShader(b_vs, sizeof(b_vs), nullptr, m_vertexShader.GetAddressOf());
 
       const D3D11_INPUT_ELEMENT_DESC ied[] =
@@ -968,7 +968,7 @@ namespace tDX
 
     // PS setup
     {
-      #include "../../../Engine/shaders/ps.h"
+      #include "ps.h"
       m_d3dDevice->CreatePixelShader(b_ps, sizeof(b_ps), nullptr, m_pixelShader.GetAddressOf());
       m_d3dContext->PSSetShader(m_pixelShader.Get(), NULL, 0);
     }
