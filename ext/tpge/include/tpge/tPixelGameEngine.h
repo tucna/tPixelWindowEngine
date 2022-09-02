@@ -954,7 +954,7 @@ namespace tDX
     // VS setup
     {
       Microsoft::WRL::ComPtr<ID3DBlob> blob;
-      D3DReadFileToBlob(L"engine/vs.cso", &blob);
+      D3DReadFileToBlob(L"../../ext/tpge/rsc/vs.cso", &blob);
 
       m_d3dDevice->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf());
 
@@ -971,7 +971,7 @@ namespace tDX
     // PS setup
     {
       Microsoft::WRL::ComPtr<ID3DBlob> blob;
-      D3DReadFileToBlob(L"engine/ps.cso", &blob);
+      D3DReadFileToBlob(L"../../ext/tpge/rsc/ps.cso", &blob);
 
       m_d3dDevice->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_pixelShader.GetAddressOf());
       m_d3dContext->PSSetShader(m_pixelShader.Get(), NULL, 0);
