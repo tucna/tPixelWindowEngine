@@ -55,9 +55,6 @@ public:
   }
 };
 
-
-//void InitEngine();
-//void InitImGui();
 };
 
 int main(int argc, char** argv)
