@@ -7,10 +7,16 @@
     <ClCompile Include="..\..\ext\imgui\sources\backends\imgui_impl_win32.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\init.cpp" />
+    <ClCompile Include="..\src\tPixelWindowEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ImGui">
       <UniqueIdentifier>{1cabdc58-2939-4cc4-941c-595d077a80cc}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\tPWE.h" />
+    <ClInclude Include="..\include\tPixelWindowEngine.h" />
   </ItemGroup>
 </Project>

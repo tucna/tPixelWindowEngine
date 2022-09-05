@@ -295,6 +295,8 @@ namespace tDX // tucna - DirectX
     virtual bool OnUserUpdate(float fElapsedTime);
     // Called every frame, just before Present
     virtual bool OnUserUpdateEndFrame(float fElapsedTime);
+    // TUCNA
+    virtual bool OnEngineConstruction();
     // Called once on application termination, so you can be a clean coder
     virtual bool OnUserDestroy();
 
@@ -907,6 +909,8 @@ namespace tDX
   {
     sAppName = "Undefined";
     tDX::PGEX::pge = this;
+
+    OnEngineConstruction();
   }
 
   tDX::rcode PixelGameEngine::Construct(uint32_t screen_w, uint32_t screen_h, uint32_t pixel_w, uint32_t pixel_h, bool full_screen, bool vsync)
@@ -1809,11 +1813,17 @@ namespace tDX
   }
   bool PixelGameEngine::OnUserUpdate(float fElapsedTime)
   {
-    UNUSED(fElapsedTime);  return false;
+    UNUSED(fElapsedTime);
+    return false;
   }
   bool PixelGameEngine::OnUserUpdateEndFrame(float fElapsedTime)
   {
-    UNUSED(fElapsedTime); return false;
+    UNUSED(fElapsedTime);
+    return true;
+  }
+  bool PixelGameEngine::OnEngineConstruction()
+  {
+    return true;
   }
   bool PixelGameEngine::OnUserDestroy()
   {

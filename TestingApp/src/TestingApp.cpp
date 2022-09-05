@@ -6,16 +6,14 @@
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_impl_win32.h"
 
+#include "tPWE.h"
+
 class Example : public tDX::PixelGameEngine
 {
 public:
   Example()
   {
     sAppName = "Example";
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
   }
 
 public:
@@ -59,11 +57,9 @@ public:
   }
 };
 
-int main()
+void InitEngine()
 {
   Example demo;
   if (demo.Construct(400, 400, 2, 2))
     demo.Start();
-
-  return 0;
 }
