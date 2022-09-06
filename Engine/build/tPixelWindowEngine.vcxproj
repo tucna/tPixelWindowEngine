@@ -15,6 +15,10 @@
     <ClCompile Include="..\..\ext\imgui\sources\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="..\src\tPixelWindowEngine.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\tPWE.h" />
+    <ClInclude Include="..\src\tPWEInterface.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{C27514DE-F8C9-4063-BD32-230CDB6605F7}</ProjectGuid>

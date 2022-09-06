@@ -4,64 +4,68 @@
 
 #include "tpge/tPixelGameEngine.h"
 
+#include "../include/tPWE.h"
+
+#include "tPWEInterface.h"
+
 namespace tPWE
 {
 
-class WindowEngine : public tDX::PixelGameEngine
+WindowEngine::WindowEngine()
 {
-public:
-  WindowEngine()
-  {
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-  }
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGui::StyleColorsDark();
 
-  virtual bool OnEngineConstruction() override
-  {
-    return true;
-  }
+  //sAppName = appSettings.name;
+}
 
-  virtual bool OnUserUpdateEndFrame(float fElapsedTime) override
-  {
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
+bool WindowEngine::OnEngineConstruction()
+{
+  return true;
+}
 
-    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+bool WindowEngine::OnUserUpdateEndFrame(float fElapsedTime)
+{
+  ImGui_ImplDX11_NewFrame();
+  ImGui_ImplWin32_NewFrame();
+  ImGui::NewFrame();
 
-    ImGui::ShowDemoWindow();
+  ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+  ImGui::ShowDemoWindow();
 
-    return true;
-  }
+  ImGui::Render();
+  ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-  virtual bool OnUserCreate() override
-  {
-    ImGui_ImplWin32_Init(GetHWND());
-    ImGui_ImplDX11_Init(GetDevice(), GetContext());
+  return true;
+}
 
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+bool WindowEngine::OnUserCreate()
+{
+  ImGui_ImplWin32_Init(GetHWND());
+  ImGui_ImplDX11_Init(GetDevice(), GetContext());
 
-    // Called once at the start, so create things here
-    return true;
-  }
+  ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-  virtual bool OnUserUpdate(float fElapsedTime) override
-  {
-    return true;
-  }
-};
+  // Called once at the start, so create things here
+  return true;
+}
+
+bool WindowEngine::OnUserUpdate(float fElapsedTime)
+{
+  return true;
+}
 
 };
 
 int main(int argc, char** argv)
 {
   tPWE::WindowEngine engine;
-  if (engine.Construct(400, 400, 2, 2))
-    engine.Start();
+  engine.AttachApplication(CreateApplication(argc, argv));
+
+  //if (engine.Construct(tPWE::appSettings.windowWidth, tPWE::appSettings.windowHeight, tPWE::appSettings.pixelHeight, tPWE::appSettings.pixelWidth))
+  //  engine.Start();
 
   return 0;
 }

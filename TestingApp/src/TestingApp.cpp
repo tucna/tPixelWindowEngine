@@ -1,65 +1,41 @@
 #include <iostream>
-
-#include "tpge/tPixelGameEngine.h"
-
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_dx11.h"
-#include "imgui/imgui_impl_win32.h"
+#include <memory>
 
 #include "tPWE.h"
 
-class Example : public tDX::PixelGameEngine
+//extern tPWE::ApplicationSettings tPWE::appSettings = { 600, 400, 2, 2, "Testing app" };
+
+class TestApp : public tPWE::Application
 {
-public:
-  Example()
-  {
-    sAppName = "Example";
-  }
-
-public:
-  bool OnUserUpdateEndFrame(float fElapsedTime)
-  {
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
-
-    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-
-    ImGui::ShowDemoWindow();
-
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-    return true;
-  }
-
-  bool OnUserCreate() override
-  {
-    ImGui_ImplWin32_Init(GetHWND());
-    ImGui_ImplDX11_Init(GetDevice(), GetContext());
-
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-    // Called once at the start, so create things here
-    return true;
-  }
-
-  bool OnUserUpdate(float fElapsedTime) override
-  {
-    // called once per frame
-    for (int x = 0; x < ScreenWidth(); x++)
-      for (int y = 0; y < ScreenHeight(); y++)
-        Draw(x, y, tDX::Pixel(rand() % 255, rand() % 255, rand() % 255));
-
-    DrawString(5, 5, "TUCNA");
-
-    return true;
-  }
 };
 
-void InitEngine()
+tPWE::Application* CreateApplication(int argc, char** argv)
 {
-  Example demo;
-  if (demo.Construct(400, 400, 2, 2))
-    demo.Start();
+  tPWE::ApplicationSettings settings;
+  settings.name = "Testing app";
+
+  return new TestApp();
 }
+
+/*
+Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
+{
+  Walnut::ApplicationSpecification spec;
+  spec.Name = "Walnut Example";
+
+  Walnut::Application* app = new Walnut::Application(spec);
+  app->PushLayer<ExampleLayer>();
+  app->SetMenubarCallback([app]()
+    {
+      if (ImGui::BeginMenu("File"))
+      {
+        if (ImGui::MenuItem("Exit"))
+        {
+          app->Close();
+        }
+        ImGui::EndMenu();
+      }
+    });
+  return app;
+}
+*/
