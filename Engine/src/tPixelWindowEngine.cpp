@@ -13,11 +13,7 @@ namespace tPWE
 
 WindowEngine::WindowEngine()
 {
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGui::StyleColorsDark();
 
-  //sAppName = appSettings.name;
 }
 
 bool WindowEngine::OnEngineConstruction()
@@ -33,7 +29,7 @@ bool WindowEngine::OnUserUpdateEndFrame(float fElapsedTime)
 
   ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-  ImGui::ShowDemoWindow();
+  m_application->OnUIRender();
 
   ImGui::Render();
   ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -43,6 +39,12 @@ bool WindowEngine::OnUserUpdateEndFrame(float fElapsedTime)
 
 bool WindowEngine::OnUserCreate()
 {
+  sAppName = m_application->GetSettings().name;
+
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGui::StyleColorsDark();
+
   ImGui_ImplWin32_Init(GetHWND());
   ImGui_ImplDX11_Init(GetDevice(), GetContext());
 
@@ -61,11 +63,14 @@ bool WindowEngine::OnUserUpdate(float fElapsedTime)
 
 int main(int argc, char** argv)
 {
+  tPWE::Application* app = CreateApplication(argc, argv);
   tPWE::WindowEngine engine;
-  engine.AttachApplication(CreateApplication(argc, argv));
 
-  //if (engine.Construct(tPWE::appSettings.windowWidth, tPWE::appSettings.windowHeight, tPWE::appSettings.pixelHeight, tPWE::appSettings.pixelWidth))
-  //  engine.Start();
+  if (engine.Construct(app->GetSettings().windowWidth, app->GetSettings().windowHeight, app->GetSettings().pixelHeight, app->GetSettings().pixelWidth))
+  {
+    engine.AttachApplication(app);
+    engine.Start();
+  }
 
   return 0;
 }

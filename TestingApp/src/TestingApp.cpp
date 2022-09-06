@@ -1,12 +1,18 @@
 #include <iostream>
 #include <memory>
 
+#include "imgui/imgui.h"
 #include "tPWE.h"
 
 //extern tPWE::ApplicationSettings tPWE::appSettings = { 600, 400, 2, 2, "Testing app" };
 
 class TestApp : public tPWE::Application
 {
+public:
+  virtual void OnUIRender()
+  {
+    ImGui::ShowDemoWindow();
+  }
 };
 
 tPWE::Application* CreateApplication(int argc, char** argv)
@@ -14,7 +20,10 @@ tPWE::Application* CreateApplication(int argc, char** argv)
   tPWE::ApplicationSettings settings;
   settings.name = "Testing app";
 
-  return new TestApp();
+  TestApp* app = new TestApp();
+  app->SetSettings(settings);
+
+  return app;
 }
 
 /*

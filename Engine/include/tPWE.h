@@ -14,7 +14,7 @@ struct ApplicationSettings
   unsigned int pixelHeight = 2;
   std::string name = "tPixelWindowEngine application";
 };
-
+/*
 class Plugin
 {
 public:
@@ -22,12 +22,26 @@ public:
   virtual void OnDetach() {}
   virtual void OnUIRender() {}
 };
-
+*/
 class Application
 {
 public:
-  Application(const ApplicationSettings& applicationSettings = ApplicationSettings()) {}
+  void SetSettings(const ApplicationSettings& applicationSettings)
+  {
+    m_settings = applicationSettings;
+  }
+
   ~Application() {}
+
+  virtual void OnAttach() {}
+  virtual void OnDetach() {}
+  virtual void OnUIRender() {}
+
+  const ApplicationSettings& GetSettings() const
+  {
+    return m_settings;
+  }
+
   /*
   template<typename T>
   void AttachPlugin()
@@ -37,7 +51,7 @@ public:
   }
   */
 private:
-  //ApplicationSettings m_settings;
+  ApplicationSettings m_settings;
 
   //std::vector<std::shared_ptr<Plugin>> m_plugins;
 };
