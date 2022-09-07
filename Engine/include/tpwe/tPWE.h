@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 
+class tDX::PixelGameEngine;
+
 namespace tPWE
 {
 
@@ -18,15 +20,18 @@ struct ApplicationSettings
 class Application
 {
 public:
-  virtual void OnAttach() {}
-  virtual void OnDetach() {}
+  virtual void OnFrameRender() {}
   virtual void OnUIRender() {}
 
   void SetSettings(const ApplicationSettings& applicationSettings) { m_settings = applicationSettings; }
   const ApplicationSettings& GetSettings() const { return m_settings; }
 
+  void SetRenderer(tDX::PixelGameEngine* renderer) { m_renderer = renderer; }
+  const tDX::PixelGameEngine* GetRenderer() const { return m_renderer; }
+
 private:
   ApplicationSettings m_settings;
+  tDX::PixelGameEngine* m_renderer;
 };
 
 };

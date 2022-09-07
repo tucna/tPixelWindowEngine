@@ -17,9 +17,13 @@ public:
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    //ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
     m_application->OnUIRender();
+
+    ImGui::Begin("Viewport");
+    ImGui::Image((void*)m_RTView.Get(), ImVec2(m_renderTarget->width, m_renderTarget->height));
+    ImGui::End();
 
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -29,8 +33,10 @@ public:
 
   virtual bool OnUserCreate() override
   {
+    // Application settings
     sAppName = m_application->GetSettings().name;
 
+    // ImGUI settings
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
@@ -40,11 +46,45 @@ public:
 
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
+    // Other settings
+    m_renderTarget = std::make_unique<tDX::Sprite>(300, 300);
+
+    SetDrawTarget(m_renderTarget.get());
+
+    // Viewport
+    D3D11_TEXTURE2D_DESC desc = {};
+    desc.Width = m_renderTarget->width;
+    desc.Height = m_renderTarget->height;
+    desc.MipLevels = 1;
+    desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.SampleDesc.Count = 1;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    desc.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA subResource = {};
+    subResource.pSysMem = m_renderTarget->GetData();
+    subResource.SysMemPitch = m_renderTarget->width * 4;
+    subResource.SysMemSlicePitch = 0;
+    GetDevice()->CreateTexture2D(&desc, &subResource, &m_RTTexture);
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MipLevels = desc.MipLevels;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    GetDevice()->CreateShaderResourceView(m_RTTexture.Get(), &srvDesc, &m_RTView);
+
     return true;
   }
 
   virtual bool OnUserUpdate(float fElapsedTime) override
   {
+    m_application->OnFrameRender();
+
+    GetContext()->UpdateSubresource(m_RTTexture.Get(), 0, NULL, m_renderTarget->GetData(), m_renderTarget->width * 4, 0);
+
     return true;
   }
 
@@ -52,6 +92,10 @@ public:
 
 private:
   std::shared_ptr<Application> m_application;
+  std::unique_ptr<tDX::Sprite> m_renderTarget;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> m_RTTexture;
+  Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_RTView;
 };
 
 };
@@ -60,6 +104,8 @@ int main(int argc, char** argv)
 {
   tPWE::WindowEngine engine;
   std::shared_ptr<tPWE::Application> app = CreateApplication(argc, argv);
+
+  app->SetRenderer(&engine);
 
   if (engine.Construct(app->GetSettings().windowWidth, app->GetSettings().windowHeight, app->GetSettings().pixelHeight, app->GetSettings().pixelWidth))
   {
