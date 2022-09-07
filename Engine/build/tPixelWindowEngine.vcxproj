@@ -16,6 +16,8 @@
     <ClCompile Include="..\src\tPixelWindowEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ext\imgui\include\imgui\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="..\..\ext\imgui\include\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="..\include\tPWE\tPWE.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

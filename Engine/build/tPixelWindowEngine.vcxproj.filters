@@ -26,5 +26,11 @@
     <ClInclude Include="..\include\tPWE\tPWE.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\ext\imgui\include\imgui\backends\imgui_impl_dx11.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ext\imgui\include\imgui\backends\imgui_impl_win32.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

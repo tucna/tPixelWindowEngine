@@ -22,7 +22,12 @@ public:
     m_application->OnUIRender();
 
     ImGui::Begin("Viewport");
-    ImGui::Image((void*)m_RTView.Get(), ImVec2(m_renderTarget->width, m_renderTarget->height));
+
+    ImGui::BeginChild("GameRender");
+    ImVec2 wsize = ImGui::GetWindowSize();
+    ImGui::Image((void*)m_RTView.Get(), wsize);
+    ImGui::EndChild();
+
     ImGui::End();
 
     ImGui::Render();
@@ -47,7 +52,7 @@ public:
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     // Other settings
-    m_renderTarget = std::make_unique<tDX::Sprite>(300, 300);
+    m_renderTarget = std::make_unique<tDX::Sprite>(20, 20);
 
     SetDrawTarget(m_renderTarget.get());
 

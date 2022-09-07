@@ -1145,6 +1145,7 @@ namespace tDX
         if (!OnUserUpdate(fElapsedTime))
           bActive = false;
 
+#ifndef T_PGE_DISABLE_SCREEN_RENDERING
         // Update texture to be rendered
         D3D11_MAPPED_SUBRESOURCE mappedTexture = {};
         m_d3dContext->Map(m_texture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedTexture);
@@ -1160,6 +1161,7 @@ namespace tDX
         }
 
         m_d3dContext->Unmap(m_texture.Get(), 0);
+#endif // T_PGE_DISABLE_SCREEN_RENDERING
 
         // Bind RT
         m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), NULL);
@@ -1178,7 +1180,7 @@ namespace tDX
         {
           fFrameTimer -= 1.0f;
 
-          std::string sTitle = "tucna.net - Pixel Game Engine - " + sAppName + " - FPS: " + std::to_string(nFrameCount);
+          std::string sTitle = sAppName + " - FPS: " + std::to_string(nFrameCount);
 
 #ifdef UNICODE
           SetWindowText(tDX_hWnd, ConvertS2W(sTitle).c_str());
@@ -2127,9 +2129,7 @@ namespace tDX
     m_d3dContext->PSSetShaderResources(0, 1, m_textureView.GetAddressOf());
 
     // Set the viewport
-    // TUCNA
-    CD3D11_VIEWPORT viewport(static_cast<float>(0), static_cast<float>(0), static_cast<float>(nWindowWidth), static_cast<float>(nWindowHeight));
-    //CD3D11_VIEWPORT viewport(static_cast<float>(nViewX), static_cast<float>(nViewY), static_cast<float>(nViewW), static_cast<float>(nViewH));
+    CD3D11_VIEWPORT viewport(static_cast<float>(nViewX), static_cast<float>(nViewY), static_cast<float>(nViewW), static_cast<float>(nViewH));
     m_d3dContext->RSSetViewports(1, &viewport);
   }
 

@@ -17,6 +17,14 @@
     <ClCompile Include="..\sources\imgui_tables.cpp" />
     <ClCompile Include="..\sources\imgui_widgets.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\imgui\imconfig.h" />
+    <ClInclude Include="..\include\imgui\imgui.h" />
+    <ClInclude Include="..\include\imgui\imgui_internal.h" />
+    <ClInclude Include="..\include\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\include\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\include\imgui\imstb_truetype.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{C1CC7113-0C7B-46B0-9F59-D5469CD7D4B0}</ProjectGuid>
