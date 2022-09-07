@@ -1,3 +1,6 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui_internal.h"
+
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
@@ -17,15 +20,18 @@ public:
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    //ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
     m_application->OnUIRender();
 
     ImGui::Begin("Viewport");
 
     ImGui::BeginChild("GameRender");
-    ImVec2 wsize = ImGui::GetWindowSize();
-    ImGui::Image((void*)m_RTView.Get(), wsize);
+    ImVec2 rtSize(m_renderTarget->width, m_renderTarget->height);
+    ImVec2 position = (ImGui::GetWindowSize() - rtSize) * 0.5f;
+
+    ImGui::SetCursorPos(position);
+    ImGui::Image((void*)m_RTView.Get(), rtSize);
     ImGui::EndChild();
 
     ImGui::End();
@@ -52,7 +58,7 @@ public:
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     // Other settings
-    m_renderTarget = std::make_unique<tDX::Sprite>(20, 20);
+    m_renderTarget = std::make_unique<tDX::Sprite>(300, 200);
 
     SetDrawTarget(m_renderTarget.get());
 
