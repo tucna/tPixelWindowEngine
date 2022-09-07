@@ -12,8 +12,8 @@ struct ApplicationSettings
 {
   unsigned int windowWidth = 400;
   unsigned int windowHeight = 400;
-  unsigned int pixelWidth = 1;
-  unsigned int pixelHeight = 1;
+  unsigned int rtWidth = 200;
+  unsigned int rtHeight = 200;
   std::string name = "tPixelWindowEngine application";
 };
 

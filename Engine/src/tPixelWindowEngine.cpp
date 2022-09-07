@@ -27,7 +27,19 @@ public:
     ImGui::Begin("Viewport");
 
     ImGui::BeginChild("GameRender");
-    ImVec2 rtSize(m_renderTarget->width, m_renderTarget->height);
+    ImVec2 rtSize = {(float)m_renderTarget->width, (float)m_renderTarget->height};
+    ImVec2 wSize = ImGui::GetWindowSize();
+    float asp = rtSize.x / rtSize.y;
+
+    rtSize.x = wSize.x;
+    rtSize.y = rtSize.x / asp;
+
+    if (rtSize.y > wSize.y)
+    {
+      rtSize.y = wSize.y;
+      rtSize.x = rtSize.y * asp;
+    }
+
     ImVec2 position = (ImGui::GetWindowSize() - rtSize) * 0.5f;
 
     ImGui::SetCursorPos(position);
@@ -58,7 +70,7 @@ public:
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     // Other settings
-    m_renderTarget = std::make_unique<tDX::Sprite>(300, 200);
+    m_renderTarget = std::make_unique<tDX::Sprite>(m_application->GetSettings().rtWidth, m_application->GetSettings().rtHeight);
 
     SetDrawTarget(m_renderTarget.get());
 
@@ -118,7 +130,7 @@ int main(int argc, char** argv)
 
   app->SetRenderer(&engine);
 
-  if (engine.Construct(app->GetSettings().windowWidth, app->GetSettings().windowHeight, app->GetSettings().pixelHeight, app->GetSettings().pixelWidth))
+  if (engine.Construct(app->GetSettings().windowWidth, app->GetSettings().windowHeight, 1, 1))
   {
     engine.AttachApplication(app);
     engine.Start();
