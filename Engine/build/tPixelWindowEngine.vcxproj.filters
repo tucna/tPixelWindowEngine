@@ -18,9 +18,13 @@
     <Filter Include="Sources">
       <UniqueIdentifier>{44641838-ffde-4a0c-8cca-6149de0e8471}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{589d7528-e7cc-4ce0-bc13-c02d89eb5833}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\tPWE.h" />
-    <ClInclude Include="..\src\tPWEInterface.h" />
+    <ClInclude Include="..\include\tPWE\tPWE.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

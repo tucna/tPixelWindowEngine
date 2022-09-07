@@ -1,70 +1,65 @@
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
-
 #include "tpge/tPixelGameEngine.h"
-
-#include "../include/tPWE.h"
-
-#include "tPWEInterface.h"
+#include "tpwe/tPWE.h"
 
 namespace tPWE
 {
 
-WindowEngine::WindowEngine()
+class WindowEngine : public tDX::PixelGameEngine
 {
+public:
+  //virtual bool OnEngineConstruction() override;
+  virtual bool OnUserUpdateEndFrame(float fElapsedTime) override
+  {
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
 
-}
+    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-bool WindowEngine::OnEngineConstruction()
-{
-  return true;
-}
+    m_application->OnUIRender();
 
-bool WindowEngine::OnUserUpdateEndFrame(float fElapsedTime)
-{
-  ImGui_ImplDX11_NewFrame();
-  ImGui_ImplWin32_NewFrame();
-  ImGui::NewFrame();
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-  ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    return true;
+  }
 
-  m_application->OnUIRender();
+  virtual bool OnUserCreate() override
+  {
+    sAppName = m_application->GetSettings().name;
 
-  ImGui::Render();
-  ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
 
-  return true;
-}
+    ImGui_ImplWin32_Init(GetHWND());
+    ImGui_ImplDX11_Init(GetDevice(), GetContext());
 
-bool WindowEngine::OnUserCreate()
-{
-  sAppName = m_application->GetSettings().name;
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGui::StyleColorsDark();
+    return true;
+  }
 
-  ImGui_ImplWin32_Init(GetHWND());
-  ImGui_ImplDX11_Init(GetDevice(), GetContext());
+  virtual bool OnUserUpdate(float fElapsedTime) override
+  {
+    return true;
+  }
 
-  ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  void AttachApplication(std::shared_ptr<Application> application) { m_application = application; }
 
-  // Called once at the start, so create things here
-  return true;
-}
-
-bool WindowEngine::OnUserUpdate(float fElapsedTime)
-{
-  return true;
-}
+private:
+  std::shared_ptr<Application> m_application;
+};
 
 };
 
 int main(int argc, char** argv)
 {
-  tPWE::Application* app = CreateApplication(argc, argv);
   tPWE::WindowEngine engine;
+  std::shared_ptr<tPWE::Application> app = CreateApplication(argc, argv);
 
   if (engine.Construct(app->GetSettings().windowWidth, app->GetSettings().windowHeight, app->GetSettings().pixelHeight, app->GetSettings().pixelWidth))
   {
