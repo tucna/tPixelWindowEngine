@@ -8,6 +8,10 @@
 class TestApp : public tPWE::Application
 {
 public:
+  virtual void OnCreate() override
+  {
+  }
+
   virtual void OnUIRender() override
   {
     ImGui::ShowDemoWindow();

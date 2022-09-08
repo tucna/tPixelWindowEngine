@@ -78,7 +78,9 @@
 #include <sstream>
 #include <chrono>
 #include <vector>
+#include <atomic>
 #include <fstream>
+#include <thread>
 #include <map>
 #include <functional>
 #include <algorithm>
@@ -431,13 +433,20 @@ namespace tDX // tucna - DirectX
     std::function<tDX::Pixel(const int x, const int y, const tDX::Pixel&, const tDX::Pixel&)> funcPixelMode;
 
     static std::map<size_t, uint8_t> mapKeys;
-    bool		pKeyNewState[256]{ 0 };
-    bool		pKeyOldState[256]{ 0 };
+    bool		  pKeyNewState[256]{ 0 };
+    bool		  pKeyOldState[256]{ 0 };
     HWButton	pKeyboardState[256];
 
-    bool		pMouseNewState[5]{ 0 };
-    bool		pMouseOldState[5]{ 0 };
+    bool		  pMouseNewState[5]{ 0 };
+    bool		  pMouseOldState[5]{ 0 };
     HWButton	pMouseState[5];
+
+    // The main engine thread
+    void      EngineThread();
+
+    // If anything sets this flag to false, the engine
+    // "should" shut down gracefully
+    static std::atomic<bool> bAtomActive;
 
     Microsoft::WRL::ComPtr<ID3D11Device>              m_d3dDevice;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext>       m_d3dContext;
@@ -452,8 +461,6 @@ namespace tDX // tucna - DirectX
     Microsoft::WRL::ComPtr<ID3D11Texture2D>           m_texture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>  m_textureView;
 
-    // If anything sets this flag to false, the engine "should" shut down gracefully
-    static bool bActive;
     // If anything sets this flag to true, the window resizing should be handled
     static bool bResize;
 
@@ -1045,17 +1052,9 @@ namespace tDX
 
     m_d3dContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
 
-    // Create user resources as part of this thread
-    if (!OnUserCreate())
-      bActive = false;
-
-    auto tp1 = std::chrono::system_clock::now();
-    auto tp2 = std::chrono::system_clock::now();
-
-
     // Start the thread
-    bActive = true;
-    //std::thread t = std::thread(&PixelGameEngine::EngineThread, this);
+    bAtomActive = true;
+    std::thread t = std::thread(&PixelGameEngine::EngineThread, this);
 
     // Main message loop
     MSG msg = {};
@@ -1066,137 +1065,9 @@ namespace tDX
         TranslateMessage(&msg);
         DispatchMessage(&msg);
       }
-      else
-      {
-        // Handle Timing
-        tp2 = std::chrono::system_clock::now();
-        std::chrono::duration<float> elapsedTime = tp2 - tp1;
-        tp1 = tp2;
-
-        // Our time per frame coefficient
-        float fElapsedTime = elapsedTime.count();
-
-        // Handle resize if needed
-        if (bResize)
-        {
-          tDX_DirectXCreateResources();
-          bResize = false;
-        }
-
-        // Handle User Input - Keyboard
-        for (int i = 0; i < 256; i++)
-        {
-          pKeyboardState[i].bPressed = false;
-          pKeyboardState[i].bReleased = false;
-
-          if (pKeyNewState[i] != pKeyOldState[i])
-          {
-            if (pKeyNewState[i])
-            {
-              pKeyboardState[i].bPressed = !pKeyboardState[i].bHeld;
-              pKeyboardState[i].bHeld = true;
-            }
-            else
-            {
-              pKeyboardState[i].bReleased = true;
-              pKeyboardState[i].bHeld = false;
-            }
-          }
-
-          pKeyOldState[i] = pKeyNewState[i];
-        }
-
-        // Handle User Input - Mouse
-        for (int i = 0; i < 5; i++)
-        {
-          pMouseState[i].bPressed = false;
-          pMouseState[i].bReleased = false;
-
-          if (pMouseNewState[i] != pMouseOldState[i])
-          {
-            if (pMouseNewState[i])
-            {
-              pMouseState[i].bPressed = !pMouseState[i].bHeld;
-              pMouseState[i].bHeld = true;
-            }
-            else
-            {
-              pMouseState[i].bReleased = true;
-              pMouseState[i].bHeld = false;
-            }
-          }
-
-          pMouseOldState[i] = pMouseNewState[i];
-        }
-
-        // Cache mouse coordinates so they remain
-        // consistent during frame
-        nMousePosX = nMousePosXcache;
-        nMousePosY = nMousePosYcache;
-
-        nMouseWheelDelta = nMouseWheelDeltaCache;
-        nMouseWheelDeltaCache = 0;
-
-#ifdef T_DBG_OVERDRAW
-        tDX::Sprite::nOverdrawCount = 0;
-#endif
-
-        // Handle Frame Update
-        if (!OnUserUpdate(fElapsedTime))
-          bActive = false;
-
-#ifndef T_PGE_DISABLE_SCREEN_RENDERING
-        // Update texture to be rendered
-        D3D11_MAPPED_SUBRESOURCE mappedTexture = {};
-        m_d3dContext->Map(m_texture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedTexture);
-
-        BYTE* mappedData = reinterpret_cast<BYTE*>(mappedTexture.pData);
-        tDX::Pixel* sourceData = pDrawTarget->GetData();
-
-        for (int32_t row = 0; row < pDrawTarget->height; row++)
-        {
-          memcpy(mappedData, sourceData, pDrawTarget->width * 4);
-          mappedData += mappedTexture.RowPitch;
-          sourceData += pDrawTarget->width;
-        }
-
-        m_d3dContext->Unmap(m_texture.Get(), 0);
-#endif // T_PGE_DISABLE_SCREEN_RENDERING
-
-        // Bind RT
-        m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), NULL);
-
-        m_d3dContext->DrawIndexed(6, 0, 0);
-
-        if (!OnUserUpdateEndFrame(fElapsedTime))
-          bActive = false;
-
-        m_swapChain->Present(0, 0);
-
-        // Update Title Bar
-        fFrameTimer += fElapsedTime;
-        nFrameCount++;
-        if (fFrameTimer >= 1.0f)
-        {
-          fFrameTimer -= 1.0f;
-
-          std::string sTitle = sAppName + " - FPS: " + std::to_string(nFrameCount);
-
-#ifdef UNICODE
-          SetWindowText(tDX_hWnd, ConvertS2W(sTitle).c_str());
-#else
-          SetWindowText(tDX_hWnd, sTitle.c_str());
-#endif
-
-          nFrameCount = 0;
-        }
-
-        if (!bActive)
-          break;
-      }
     }
 
-    OnUserDestroy();
+    t.join();
 
     // Finish rendering
     ID3D11RenderTargetView* nullViews[] = { nullptr };
@@ -1891,6 +1762,147 @@ namespace tDX
       nMousePosYcache = 0;
   }
 
+  void PixelGameEngine::EngineThread()
+  {
+    // Create user resources as part of this thread
+    if (!OnUserCreate())
+      bAtomActive = false;
+
+    auto tp1 = std::chrono::system_clock::now();
+    auto tp2 = std::chrono::system_clock::now();
+
+    while (bAtomActive)
+    {
+      // Handle Timing
+      tp2 = std::chrono::system_clock::now();
+      std::chrono::duration<float> elapsedTime = tp2 - tp1;
+      tp1 = tp2;
+
+      // Our time per frame coefficient
+      float fElapsedTime = elapsedTime.count();
+
+      // Handle resize if needed
+      if (bResize)
+      {
+        tDX_DirectXCreateResources();
+        bResize = false;
+      }
+
+      // Handle User Input - Keyboard
+      for (int i = 0; i < 256; i++)
+      {
+        pKeyboardState[i].bPressed = false;
+        pKeyboardState[i].bReleased = false;
+
+        if (pKeyNewState[i] != pKeyOldState[i])
+        {
+          if (pKeyNewState[i])
+          {
+            pKeyboardState[i].bPressed = !pKeyboardState[i].bHeld;
+            pKeyboardState[i].bHeld = true;
+          }
+          else
+          {
+            pKeyboardState[i].bReleased = true;
+            pKeyboardState[i].bHeld = false;
+          }
+        }
+
+        pKeyOldState[i] = pKeyNewState[i];
+      }
+
+      // Handle User Input - Mouse
+      for (int i = 0; i < 5; i++)
+      {
+        pMouseState[i].bPressed = false;
+        pMouseState[i].bReleased = false;
+
+        if (pMouseNewState[i] != pMouseOldState[i])
+        {
+          if (pMouseNewState[i])
+          {
+            pMouseState[i].bPressed = !pMouseState[i].bHeld;
+            pMouseState[i].bHeld = true;
+          }
+          else
+          {
+            pMouseState[i].bReleased = true;
+            pMouseState[i].bHeld = false;
+          }
+        }
+
+        pMouseOldState[i] = pMouseNewState[i];
+      }
+
+      // Cache mouse coordinates so they remain
+      // consistent during frame
+      nMousePosX = nMousePosXcache;
+      nMousePosY = nMousePosYcache;
+
+      nMouseWheelDelta = nMouseWheelDeltaCache;
+      nMouseWheelDeltaCache = 0;
+
+#ifdef T_DBG_OVERDRAW
+      tDX::Sprite::nOverdrawCount = 0;
+#endif
+
+      // Handle Frame Update
+      if (!OnUserUpdate(fElapsedTime))
+        bAtomActive = false;
+
+#ifndef T_PGE_DISABLE_SCREEN_RENDERING
+      // Update texture to be rendered
+      D3D11_MAPPED_SUBRESOURCE mappedTexture = {};
+      m_d3dContext->Map(m_texture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedTexture);
+
+      BYTE* mappedData = reinterpret_cast<BYTE*>(mappedTexture.pData);
+      tDX::Pixel* sourceData = pDrawTarget->GetData();
+
+      for (int32_t row = 0; row < pDrawTarget->height; row++)
+      {
+        memcpy(mappedData, sourceData, pDrawTarget->width * 4);
+        mappedData += mappedTexture.RowPitch;
+        sourceData += pDrawTarget->width;
+      }
+
+      m_d3dContext->Unmap(m_texture.Get(), 0);
+#endif // T_PGE_DISABLE_SCREEN_RENDERING
+
+      // Bind RT
+      m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), NULL);
+
+      m_d3dContext->DrawIndexed(6, 0, 0);
+
+      if (!OnUserUpdateEndFrame(fElapsedTime))
+        bAtomActive = false;
+
+      m_swapChain->Present(0, 0);
+
+      // Update Title Bar
+      fFrameTimer += fElapsedTime;
+      nFrameCount++;
+      if (fFrameTimer >= 1.0f)
+      {
+        fFrameTimer -= 1.0f;
+
+        std::string sTitle = sAppName + " - FPS: " + std::to_string(nFrameCount);
+
+#ifdef UNICODE
+        SetWindowText(tDX_hWnd, ConvertS2W(sTitle).c_str());
+#else
+        SetWindowText(tDX_hWnd, sTitle.c_str());
+#endif
+
+        nFrameCount = 0;
+      }
+
+      if (!bAtomActive)
+        break;
+    }
+
+    OnUserDestroy();
+  }
+
   // Thanks @MaGetzUb for this, which allows sprites to be defined
   // at construction, by initialising the GDI subsystem
   static class GDIPlusStartup
@@ -2207,7 +2219,7 @@ namespace tDX
 
   // Need a couple of statics as these are singleton instances
   // read from multiple locations
-  bool PixelGameEngine::bActive{ false };
+  std::atomic<bool> PixelGameEngine::bAtomActive{ false };
   bool PixelGameEngine::bResize{ false };
   std::map<size_t, uint8_t> PixelGameEngine::mapKeys;
   tDX::PixelGameEngine* tDX::PGEX::pge = nullptr;

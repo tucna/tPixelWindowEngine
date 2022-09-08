@@ -99,6 +99,8 @@ public:
     srvDesc.Texture2D.MostDetailedMip = 0;
     GetDevice()->CreateShaderResourceView(m_RTTexture.Get(), &srvDesc, &m_RTView);
 
+    m_application->OnCreate();
+
     return true;
   }
 

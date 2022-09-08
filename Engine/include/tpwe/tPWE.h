@@ -22,6 +22,7 @@ class Application
 public:
   virtual void OnFrameRender() {}
   virtual void OnUIRender() {}
+  virtual void OnCreate() {}
 
   void SetSettings(const ApplicationSettings& applicationSettings) { m_settings = applicationSettings; }
   const ApplicationSettings& GetSettings() const { return m_settings; }
