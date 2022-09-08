@@ -1058,13 +1058,10 @@ namespace tDX
 
     // Main message loop
     MSG msg = {};
-    while (WM_QUIT != msg.message)
+    while (GetMessage(&msg, NULL, 0, 0) > 0)
     {
-      if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-      {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-      }
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
     }
 
     t.join();
@@ -1900,7 +1897,12 @@ namespace tDX
         break;
     }
 
+    // TODO: No check for false
     OnUserDestroy();
+
+    // TODO: Implement this
+    //renderer->DestroyDevice();
+    PostMessage(tDX_hWnd, WM_DESTROY, 0, 0);
   }
 
   // Thanks @MaGetzUb for this, which allows sprites to be defined
@@ -2211,6 +2213,7 @@ namespace tDX
     case WM_RBUTTONUP:	sge->pMouseNewState[1] = false; return 0;
     case WM_MBUTTONDOWN:sge->pMouseNewState[2] = true; return 0;
     case WM_MBUTTONUP:	sge->pMouseNewState[2] = false;	return 0;
+    case WM_CLOSE:		  bAtomActive = false; return 0;
     case WM_DESTROY:	  PostQuitMessage(0); return 0;
     }
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
