@@ -123,7 +123,7 @@ private:
 
 };
 
-int main(int argc, char** argv)
+int tPWE_Main(int argc, char** argv)
 {
   tPWE::WindowEngine engine;
   std::shared_ptr<tPWE::Application> app = CreateApplication(argc, argv);
@@ -138,3 +138,17 @@ int main(int argc, char** argv)
 
   return 0;
 }
+
+#ifdef _DEBUG
+int main(int argc, char** argv)
+{
+  tPWE_Main(argc, argv);
+}
+#else
+#include <Windows.h>
+
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow)
+{
+  tPWE_Main(__argc, __argv);
+}
+#endif // _DEBUG
