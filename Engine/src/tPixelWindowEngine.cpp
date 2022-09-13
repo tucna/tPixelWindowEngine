@@ -24,29 +24,32 @@ public:
 
     m_application->OnUIRender();
 
-    ImGui::Begin("Viewport");
-
-    ImGui::BeginChild("GameRender");
-    ImVec2 rtSize = {(float)m_renderTarget->width, (float)m_renderTarget->height};
-    ImVec2 wSize = ImGui::GetWindowSize();
-    float asp = rtSize.x / rtSize.y;
-
-    rtSize.x = wSize.x;
-    rtSize.y = rtSize.x / asp;
-
-    if (rtSize.y > wSize.y)
+    if (m_application->IsApplicationDrawing())
     {
-      rtSize.y = wSize.y;
-      rtSize.x = rtSize.y * asp;
+      ImGui::Begin("Viewport");
+
+      ImGui::BeginChild("GameRender");
+      ImVec2 rtSize = { (float)m_renderTarget->width, (float)m_renderTarget->height };
+      ImVec2 wSize = ImGui::GetWindowSize();
+      float asp = rtSize.x / rtSize.y;
+
+      rtSize.x = wSize.x;
+      rtSize.y = rtSize.x / asp;
+
+      if (rtSize.y > wSize.y)
+      {
+        rtSize.y = wSize.y;
+        rtSize.x = rtSize.y * asp;
+      }
+
+      ImVec2 position = (ImGui::GetWindowSize() - rtSize) * 0.5f;
+
+      ImGui::SetCursorPos(position);
+      ImGui::Image((void*)m_RTView.Get(), rtSize);
+      ImGui::EndChild();
+
+      ImGui::End();
     }
-
-    ImVec2 position = (ImGui::GetWindowSize() - rtSize) * 0.5f;
-
-    ImGui::SetCursorPos(position);
-    ImGui::Image((void*)m_RTView.Get(), rtSize);
-    ImGui::EndChild();
-
-    ImGui::End();
 
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -70,34 +73,37 @@ public:
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     // Other settings
-    m_renderTarget = std::make_unique<tDX::Sprite>(m_application->GetSettings().rtWidth, m_application->GetSettings().rtHeight);
+    if (m_application->IsApplicationDrawing())
+    {
+      m_renderTarget = std::make_unique<tDX::Sprite>(m_application->GetSettings().rtWidth, m_application->GetSettings().rtHeight);
 
-    SetDrawTarget(m_renderTarget.get());
+      SetDrawTarget(m_renderTarget.get());
 
-    // Viewport
-    D3D11_TEXTURE2D_DESC desc = {};
-    desc.Width = m_renderTarget->width;
-    desc.Height = m_renderTarget->height;
-    desc.MipLevels = 1;
-    desc.ArraySize = 1;
-    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    desc.SampleDesc.Count = 1;
-    desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    desc.CPUAccessFlags = 0;
+      // Viewport
+      D3D11_TEXTURE2D_DESC desc = {};
+      desc.Width = m_renderTarget->width;
+      desc.Height = m_renderTarget->height;
+      desc.MipLevels = 1;
+      desc.ArraySize = 1;
+      desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+      desc.SampleDesc.Count = 1;
+      desc.Usage = D3D11_USAGE_DEFAULT;
+      desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+      desc.CPUAccessFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA subResource = {};
-    subResource.pSysMem = m_renderTarget->GetData();
-    subResource.SysMemPitch = m_renderTarget->width * 4;
-    subResource.SysMemSlicePitch = 0;
-    GetDevice()->CreateTexture2D(&desc, &subResource, &m_RTTexture);
+      D3D11_SUBRESOURCE_DATA subResource = {};
+      subResource.pSysMem = m_renderTarget->GetData();
+      subResource.SysMemPitch = m_renderTarget->width * 4;
+      subResource.SysMemSlicePitch = 0;
+      GetDevice()->CreateTexture2D(&desc, &subResource, &m_RTTexture);
 
-    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MipLevels = desc.MipLevels;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    GetDevice()->CreateShaderResourceView(m_RTTexture.Get(), &srvDesc, &m_RTView);
+      D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+      srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+      srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+      srvDesc.Texture2D.MipLevels = desc.MipLevels;
+      srvDesc.Texture2D.MostDetailedMip = 0;
+      GetDevice()->CreateShaderResourceView(m_RTTexture.Get(), &srvDesc, &m_RTView);
+    }
 
     m_application->OnCreate();
 
@@ -106,9 +112,12 @@ public:
 
   virtual bool OnUserUpdate(float fElapsedTime) override
   {
-    m_application->OnFrameRender();
+    if (m_application->IsApplicationDrawing())
+    {
+      m_application->OnFrameRender();
 
-    GetContext()->UpdateSubresource(m_RTTexture.Get(), 0, NULL, m_renderTarget->GetData(), m_renderTarget->width * 4, 0);
+      GetContext()->UpdateSubresource(m_RTTexture.Get(), 0, NULL, m_renderTarget->GetData(), m_renderTarget->width * 4, 0);
+    }
 
     return true;
   }

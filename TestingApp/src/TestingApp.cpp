@@ -40,6 +40,7 @@ std::shared_ptr<tPWE::Application> CreateApplication(int argc, char** argv)
 
   std::shared_ptr<TestApp> app = std::make_shared<TestApp>();
   app->SetSettings(settings);
+  //app->DisableCustomDrawing();
 
   return app;
 }

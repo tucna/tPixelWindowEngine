@@ -30,9 +30,13 @@ public:
   void SetRenderer(tDX::PixelGameEngine* renderer) { m_renderer = renderer; }
   const tDX::PixelGameEngine* GetRenderer() const { return m_renderer; }
 
+  void DisableCustomDrawing() { m_customDrawing = false; }
+  bool IsApplicationDrawing() { return m_customDrawing; }
+
 private:
   ApplicationSettings m_settings;
   tDX::PixelGameEngine* m_renderer;
+  bool m_customDrawing = true;
 };
 
 };
