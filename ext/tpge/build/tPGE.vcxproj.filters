@@ -4,9 +4,6 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{ec3c0724-3d2c-49a7-8e24-1888e6bdbc38}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine">
-      <UniqueIdentifier>{6032d30a-d872-4f3f-bc89-75138c38023e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources">
       <UniqueIdentifier>{3a250770-a331-4f3f-abf0-f5d41e424972}</UniqueIdentifier>
     </Filter>
@@ -20,13 +17,13 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\tpge\tPixelGameEngine.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\src\dependencies.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\tpge\tPixelGameEngine.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

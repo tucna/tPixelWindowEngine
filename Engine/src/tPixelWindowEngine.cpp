@@ -13,9 +13,10 @@ namespace tPWE
 class WindowEngine : public tDX::PixelGameEngine
 {
 public:
-  //virtual bool OnEngineConstruction() override;
   virtual bool OnUserUpdateEndFrame(float fElapsedTime) override
   {
+    m_application->OnUpdateStart();
+
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
