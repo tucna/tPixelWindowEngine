@@ -27,8 +27,8 @@ public:
     {
       ImGui::Begin("Viewport");
 
-      ImVec2 rtSize = { (float)m_renderTarget->width, (float)m_renderTarget->height };
-      ImVec2 wSize = ImGui::GetWindowSize();
+      ImVec2 rtSize = {(float)m_renderTarget->width, (float)m_renderTarget->height};
+      ImVec2 wSize = ImGui::GetWindowSize() - ImVec2(2.0f, 2.0f); // Minus borders maybe? ImGUI magic
       wSize.y -= ImGui::GetFrameHeight(); // Minus title bar size
       float asp = rtSize.x / rtSize.y;
 
@@ -41,7 +41,7 @@ public:
         rtSize.x = rtSize.y * asp;
       }
 
-      ImVec2 position = (wSize - rtSize) * 0.5f;
+      ImVec2 position = (wSize - rtSize) * 0.5f + ImVec2(1.0f, 1.0f); // Plus something? ImGUI magic
       position.y += ImGui::GetFrameHeight(); // // Plus title bar size
 
       m_application->SetMousePosition({std::clamp(lround((ImGui::GetMousePos().x - position.x)/rtSize.x * m_renderTarget->width), 0l, (long)m_renderTarget->width - 1),
