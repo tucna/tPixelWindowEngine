@@ -19,7 +19,7 @@ public:
 
   virtual void OnFrameRender() override
   {
-    tDX::PixelGameEngine renderer = *GetRenderer();
+    tDX::PixelGameEngine& renderer = *GetRenderer();
 
     for (int x = 0; x < renderer.GetDrawTargetWidth(); x++)
       for (int y = 0; y < renderer.GetDrawTargetHeight(); y++)

@@ -354,6 +354,9 @@ namespace tDX // tucna - DirectX
     // Draws a circle located at (x,y) with radius
     void DrawCircle(int32_t x, int32_t y, int32_t radius, Pixel p = tDX::WHITE, uint8_t mask = 0xFF);
     void DrawCircle(const tDX::vi2d& pos, int32_t radius, Pixel p = tDX::WHITE, uint8_t mask = 0xFF);
+    // Draws a polygon
+    void DrawPolygon(const tDX::vi2d* vertices, uint8_t vertexNumber, Pixel p = tDX::WHITE);
+    void FillPolygon4V(const tDX::vi2d* vertices, Pixel p = tDX::WHITE);
     // Fills a circle located at (x,y) with radius
     void FillCircle(int32_t x, int32_t y, int32_t radius, Pixel p = tDX::WHITE);
     void FillCircle(const tDX::vi2d& pos, int32_t radius, Pixel p = tDX::WHITE);
@@ -1310,6 +1313,20 @@ namespace tDX
       if (d < 0) d += 4 * x0++ + 6;
       else d += 4 * (x0++ - y0--) + 10;
     }
+  }
+
+  void PixelGameEngine::DrawPolygon(const tDX::vi2d* vertices, uint8_t vertexNumber, Pixel p)
+  {
+    for (uint8_t i = 0; i < vertexNumber - 1; i++)
+      DrawLine(vertices[i], vertices[i + 1], p);
+
+    DrawLine(vertices[0], vertices[vertexNumber - 1], p);
+  }
+
+  void PixelGameEngine::FillPolygon4V(const tDX::vi2d* vertices, Pixel p)
+  {
+    FillTriangle(vertices[0], vertices[1], vertices[2], p);
+    FillTriangle(vertices[0], vertices[2], vertices[3], p);
   }
 
   void PixelGameEngine::FillCircle(const tDX::vi2d& pos, int32_t radius, Pixel p)

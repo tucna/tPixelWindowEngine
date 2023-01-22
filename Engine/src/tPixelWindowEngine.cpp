@@ -15,8 +15,6 @@ class WindowEngine : public tDX::PixelGameEngine
 public:
   virtual bool OnUserUpdateEndFrame(float fElapsedTime) override
   {
-    m_application->OnUpdateStart();
-
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
@@ -29,9 +27,9 @@ public:
     {
       ImGui::Begin("Viewport");
 
-      ImGui::BeginChild("GameRender");
       ImVec2 rtSize = { (float)m_renderTarget->width, (float)m_renderTarget->height };
       ImVec2 wSize = ImGui::GetWindowSize();
+      wSize.y -= ImGui::GetFrameHeight(); // Minus title bar size
       float asp = rtSize.x / rtSize.y;
 
       rtSize.x = wSize.x;
@@ -43,11 +41,14 @@ public:
         rtSize.x = rtSize.y * asp;
       }
 
-      ImVec2 position = (ImGui::GetWindowSize() - rtSize) * 0.5f;
+      ImVec2 position = (wSize - rtSize) * 0.5f;
+      position.y += ImGui::GetFrameHeight(); // // Plus title bar size
+
+      m_application->SetMousePosition({std::clamp(lround((ImGui::GetMousePos().x - position.x)/rtSize.x * m_renderTarget->width), 0l, (long)m_renderTarget->width - 1),
+                                       std::clamp(lround((ImGui::GetMousePos().y - position.y)/rtSize.y * m_renderTarget->height), 0l, (long)m_renderTarget->height - 1)});
 
       ImGui::SetCursorPos(position);
       ImGui::Image((void*)m_RTView.Get(), rtSize);
-      ImGui::EndChild();
 
       ImGui::End();
     }
@@ -67,6 +68,9 @@ public:
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+
+    // TODO TUCNA Not sure if gusta
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
 
     ImGui_ImplWin32_Init(GetHWND());
     ImGui_ImplDX11_Init(GetDevice(), GetContext());
@@ -113,6 +117,8 @@ public:
 
   virtual bool OnUserUpdate(float fElapsedTime) override
   {
+    m_application->OnUpdateStart();
+
     if (m_application->IsApplicationDrawing())
     {
       m_application->OnFrameRender();
