@@ -1890,7 +1890,7 @@ namespace tDX
       if (!OnUserUpdateEndFrame(fElapsedTime))
         bAtomActive = false;
 
-      m_swapChain->Present(0, 0);
+      m_swapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
 
       // Update Title Bar
       fFrameTimer += fElapsedTime;
@@ -2107,6 +2107,7 @@ namespace tDX
       swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
       swapChainDesc.BufferCount = backBufferCount;
       swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+      swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
       DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
       fsSwapChainDesc.Windowed = TRUE;

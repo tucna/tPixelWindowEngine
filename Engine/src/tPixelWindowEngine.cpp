@@ -21,7 +21,7 @@ public:
 
     ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-    m_application->OnUIRender();
+    m_application->OnUIRender(fElapsedTime);
 
     if (m_application->IsApplicationDrawing())
     {
@@ -117,11 +117,11 @@ public:
 
   virtual bool OnUserUpdate(float fElapsedTime) override
   {
-    m_application->OnUpdateStart();
+    m_application->OnUpdateStart(fElapsedTime);
 
     if (m_application->IsApplicationDrawing())
     {
-      m_application->OnFrameRender();
+      m_application->OnFrameRender(fElapsedTime);
 
       GetContext()->UpdateSubresource(m_RTTexture.Get(), 0, NULL, m_renderTarget->GetData(), m_renderTarget->width * 4, 0);
     }

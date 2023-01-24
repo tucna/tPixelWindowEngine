@@ -12,12 +12,12 @@ public:
   {
   }
 
-  virtual void OnUIRender() override
+  virtual void OnUIRender(float fElapsedTime) override
   {
     ImGui::ShowDemoWindow();
   }
 
-  virtual void OnFrameRender() override
+  virtual void OnFrameRender(float fElapsedTime) override
   {
     tDX::PixelGameEngine& renderer = *GetRenderer();
 
