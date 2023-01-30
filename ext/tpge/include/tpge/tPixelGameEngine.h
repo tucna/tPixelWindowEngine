@@ -295,9 +295,11 @@ namespace tDX // tucna - DirectX
     virtual bool OnUserCreate();
     // Called every frame, and provides you with a time per frame value
     virtual bool OnUserUpdate(float fElapsedTime);
+    // Called based on fOneFrame
+    virtual void OnUserFixedUpdate();
     // Called every frame, just before Present
     virtual bool OnUserUpdateEndFrame(float fElapsedTime);
-    // TUCNA
+    // Called upon construction
     virtual bool OnEngineConstruction();
     // Called once on application termination, so you can be a clean coder
     virtual bool OnUserDestroy();
@@ -394,6 +396,7 @@ namespace tDX // tucna - DirectX
 
   public: // Branding
     std::string sAppName;
+    float fOneFrame;
 
   private: // Inner mysterious workings
     struct Vertex
@@ -431,6 +434,7 @@ namespace tDX // tucna - DirectX
     bool		bHasMouseFocus = false;
     bool		bEnableVSYNC = false;
     float		fFrameTimer = 1.0f;
+    float   fOneFrameTimer = 0.0f;
     int			nFrameCount = 0;
     Sprite		*fontSprite = nullptr;
     std::function<tDX::Pixel(const int x, const int y, const tDX::Pixel&, const tDX::Pixel&)> funcPixelMode;
@@ -1703,6 +1707,9 @@ namespace tDX
     UNUSED(fElapsedTime);
     return false;
   }
+  void PixelGameEngine::OnUserFixedUpdate()
+  {
+  }
   bool PixelGameEngine::OnUserUpdateEndFrame(float fElapsedTime)
   {
     UNUSED(fElapsedTime);
@@ -1848,8 +1855,7 @@ namespace tDX
         pMouseOldState[i] = pMouseNewState[i];
       }
 
-      // Cache mouse coordinates so they remain
-      // consistent during frame
+      // Cache mouse coordinates so they remain consistent during frame
       nMousePosX = nMousePosXcache;
       nMousePosY = nMousePosYcache;
 
@@ -1859,6 +1865,17 @@ namespace tDX
 #ifdef T_DBG_OVERDRAW
       tDX::Sprite::nOverdrawCount = 0;
 #endif
+
+      fOneFrameTimer += fElapsedTime;
+
+      if (fOneFrame > 0.0f)
+      {
+        while (fOneFrameTimer >= fOneFrame)
+        {
+          OnUserFixedUpdate();
+          fOneFrameTimer -= fOneFrame;
+        }
+      }
 
       // Handle Frame Update
       if (!OnUserUpdate(fElapsedTime))
@@ -1893,8 +1910,8 @@ namespace tDX
       m_swapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
 
       // Update Title Bar
-      fFrameTimer += fElapsedTime;
       nFrameCount++;
+      fFrameTimer += fElapsedTime;
       if (fFrameTimer >= 1.0f)
       {
         fFrameTimer -= 1.0f;

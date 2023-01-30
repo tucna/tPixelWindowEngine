@@ -14,6 +14,7 @@ struct ApplicationSettings
   unsigned int windowHeight = 400;
   unsigned int rtWidth = 200;
   unsigned int rtHeight = 200;
+  unsigned int FPSLock = 0; // 0 = disabled
   std::string name = "tPixelWindowEngine application";
 };
 
@@ -21,7 +22,8 @@ class Application
 {
 public:
   virtual void OnCreate() {}
-  virtual void OnUpdateStart(float fElapsedTime) {};
+  virtual void OnFixedUpdate() {}
+  virtual void OnUpdate(float fElapsedTime) {};
   virtual void OnFrameRender(float fElapsedTime) {}
   virtual void OnUIRender(float fElapsedTime) {}
 

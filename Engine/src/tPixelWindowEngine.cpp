@@ -62,15 +62,15 @@ public:
   virtual bool OnUserCreate() override
   {
     // Application settings
+    unsigned int FPSLock = (float)m_application->GetSettings().FPSLock;
+    fOneFrame = FPSLock == 0 ? 0.0f : 1.0f / (float)FPSLock;
     sAppName = m_application->GetSettings().name;
 
     // ImGUI settings
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
-
-    // TODO TUCNA Not sure if gusta
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0)); // No borders
 
     ImGui_ImplWin32_Init(GetHWND());
     ImGui_ImplDX11_Init(GetDevice(), GetContext());
@@ -115,9 +115,14 @@ public:
     return true;
   }
 
+  virtual void OnUserFixedUpdate() override
+  {
+    m_application->OnFixedUpdate();
+  }
+
   virtual bool OnUserUpdate(float fElapsedTime) override
   {
-    m_application->OnUpdateStart(fElapsedTime);
+    m_application->OnUpdate(fElapsedTime);
 
     if (m_application->IsApplicationDrawing())
     {

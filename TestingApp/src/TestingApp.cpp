@@ -17,6 +17,11 @@ public:
     ImGui::ShowDemoWindow();
   }
 
+  virtual void OnFixedUpdate()
+  {
+    m_timer++;
+  }
+
   virtual void OnFrameRender(float fElapsedTime) override
   {
     tDX::PixelGameEngine& renderer = *GetRenderer();
@@ -25,8 +30,11 @@ public:
       for (int y = 0; y < renderer.GetDrawTargetHeight(); y++)
         renderer.Draw(x, y, tDX::Pixel(rand() % 255, rand() % 255, rand() % 255));
 
-    renderer.DrawString(5, 5, "TUCNA");
+    renderer.DrawString(5, 5, std::to_string(m_timer));
   }
+
+private:
+  uint32_t m_timer = 0;
 };
 
 std::shared_ptr<tPWE::Application> CreateApplication(int argc, char** argv)
@@ -36,6 +44,7 @@ std::shared_ptr<tPWE::Application> CreateApplication(int argc, char** argv)
   settings.windowHeight = 900;
   settings.rtWidth = 800;
   settings.rtHeight = 600;
+  settings.FPSLock = 1;
   settings.name = "Testing app";
 
   std::shared_ptr<TestApp> app = std::make_shared<TestApp>();
