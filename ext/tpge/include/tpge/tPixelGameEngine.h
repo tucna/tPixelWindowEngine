@@ -2098,7 +2098,7 @@ namespace tDX
     // If the swap chain already exists, resize it, otherwise create one.
     if (m_swapChain)
     {
-      m_swapChain->ResizeBuffers(backBufferCount, backBufferWidth, backBufferHeight, backBufferFormat, 0);
+      m_swapChain->ResizeBuffers(backBufferCount, backBufferWidth, backBufferHeight, backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING);
     }
     else
     {
