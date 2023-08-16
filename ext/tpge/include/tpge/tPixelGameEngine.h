@@ -91,8 +91,8 @@
 namespace _gfs = std::filesystem;
 #else
   // Older "Modern" C++ :P
-#include <experimental/filesystem>
-namespace _gfs = std::experimental::filesystem::v1;
+#include <filesystem>
+namespace _gfs = std::filesystem;
 #endif
 
 #undef min
