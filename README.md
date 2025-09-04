@@ -3,7 +3,7 @@
 This repository contains a simple demo application (`TestingApp`) built using the **tPixelWindowEngine (tPWE)**, which extends the **tPixelGameEngine (tPGE)** with support for **Dear ImGui** and a windowed rendering workflow on **DirectX 11**.  
 
 The project demonstrates:  
-- How to integrate **Dear ImGui** with a pixel-based game engine into singular **tPixelWindowEngine**  
+- How to integrate [Dear ImGui](https://github.com/ocornut/imgui) with a [pixel game engine](https://github.com/tucna/tPixelGameEngine) into singular **tPixelWindowEngine**  
 - Rendering into a custom viewport with resizable docking support
 - Fixed updates, frame rendering, and ImGui-based UI
 - How to encapsulate functionality and provide only the necessary API
